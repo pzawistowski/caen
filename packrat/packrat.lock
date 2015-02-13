@@ -89,6 +89,11 @@ Source: CRAN
 Version: 0.4.1-1
 Hash: 5716097644904b9c1b4be2692de16005
 
+Package: proto
+Source: CRAN
+Version: 0.3-10
+Hash: 668a9e87cedbdc5f56c396edf1bd2648
+
 Package: R6
 Source: CRAN
 Version: 2.0.1
