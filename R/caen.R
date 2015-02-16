@@ -13,24 +13,33 @@ lambda <- function(ni, k = 20, f = 4){
   1/(1+exp(-(ni-k)/f))
 }
 
-#' @export
-CaEn <- function(atts, target, target.value = levels(as.factor(target))[[1]], k = 20, f = 4){
-  tab <- table(atts, target)
+createMapping <- function(x,y, target.value, lambda.fun){
+  tab <- table(x, y)
   
   col.idx <- which(colnames(tab) == target.value)
   col <- tab[,col.idx]
-  p <- sum(col)/length(atts)
-    
+  target.p <- sum(col)/length(x)
+  
   rs <- rowSums(tab)
-  map <- as.list(lambda(rs, k, f)*(col/rs) + (1-lambda(rs, k, f))*p)
+  l <- lambda.fun(rs)
+  
+  map <- as.list(l*(col/rs) + (1-l)*target.p)
   names(map) <- rownames(tab)
   
-  default <- sum(col)/sum(colSums(tab))
+  list(map = map, 
+       default = sum(col)/sum(tab)
+  )  
+}
+
+
+#' @export
+CaEn <- function(x, y, target.value = levels(as.factor(y))[[1]], k = 20, f = 4){
+  mapping <- createMapping(x,y, target.value, function(v) lambda(v, k, f))
   
-  proto(map = map, 
-        default = default,
-        encode =  function(this, atts){
-          encodeColumn(atts, this$map, this$default)   
+  proto(map = mapping$map, 
+        default = mapping$default,
+        encode =  function(this, x){
+          encodeColumn(x, this$map, this$default)   
         }
   )
 }
