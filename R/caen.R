@@ -9,11 +9,17 @@ encodeColumn <- function(atts, map, default){
   vapply(atts, FUN=function(v) nvl(map[[v]], default), FUN.VALUE=0.0, USE.NAMES = FALSE)
 }
 
+lambda <- function(ni, k = 20, f = 4){
+  1/(1+exp(-(ni-k)/f))
+}
+
 #' @export
-CaEn <- function(atts, target){
+CaEn <- function(atts, target, k = 20, f = 4){
   tab <- table(atts, target)
-  
-  map <- as.list((tab/rowSums(tab))[,1])
+  col <- tab[,1]
+  p <- sum(col)/length(atts)
+    
+  map <- as.list(lambda(col, k, f)*(col/rowSums(tab)) + (1-lambda(col, k, f))*p)
   names(map) <- rownames(tab)
   
   default <- sum(tab[,1])/sum(colSums(tab))
