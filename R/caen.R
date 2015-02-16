@@ -14,16 +14,18 @@ lambda <- function(ni, k = 20, f = 4){
 }
 
 #' @export
-CaEn <- function(atts, target, k = 20, f = 4){
+CaEn <- function(atts, target, target.value = levels(as.factor(target))[[1]], k = 20, f = 4){
   tab <- table(atts, target)
-  col <- tab[,1]
+  
+  col.idx <- which(colnames(tab) == target.value)
+  col <- tab[,col.idx]
   p <- sum(col)/length(atts)
     
-  map <- as.list(lambda(col, k, f)*(col/rowSums(tab)) + (1-lambda(col, k, f))*p)
+  rs <- rowSums(tab)
+  map <- as.list(lambda(rs, k, f)*(col/rs) + (1-lambda(rs, k, f))*p)
   names(map) <- rownames(tab)
   
-  default <- sum(tab[,1])/sum(colSums(tab))
-  map <- map
+  default <- sum(col)/sum(colSums(tab))
   
   proto(map = map, 
         default = default,
