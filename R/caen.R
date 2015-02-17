@@ -14,7 +14,7 @@ encodeColumns <- function(atts, mapping){
   if(is.null(col.num) || col.num == 1){
     encodeColumn(atts, mapping$map, mapping$default)  
   }else{    
-    apply(1:col.num, 1, function(i) encodeColumn(atts[,i], mapping[[i]]$map, mapping[[i]]$default))
+    sapply(1:col.num, function(i) encodeColumn(atts[,i], mapping[[i]]$map, mapping[[i]]$default))
   }
 }
 

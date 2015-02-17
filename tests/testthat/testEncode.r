@@ -30,7 +30,7 @@ test_that("encoding rare values is influenced by global means", {
   nrow <- 1000
   x <- c("A","A", rep("B", nrow-2))
   y <- c("1","1",rep(c("-1","1"), nrow/2-1))
-  enc <- CaEn(x,y, k=2, f = 2)
+  enc <- CaEn(x,y, k=2, f = 2, target.value = "1")
   
   expect_equal(enc$encode(x)[1:2], c(0.75, 0.75), tolerance=0.01)
 })
@@ -39,7 +39,7 @@ test_that("encoding rare values is influenced by global means", {
 test_that("encoding skewed values works properly", {
   x <- c(rep("A", 500), rep("B",500))
   y <- c(rep("1", 200), rep("-1",300), rep("1", 300), rep("-1",200))
-  enc <- CaEn(x,y)
+  enc <- CaEn(x,y, target.value = "1")
   
   expect_equal(enc$encode(x), c(rep(0.4, 500), rep(0.6, 500)), tolerance=0.01)
 })
