@@ -24,7 +24,6 @@ test_that("encoding can handle previously unseen values", {
   
   
   expect_equal(enc$encode(c('C')), c(4/6))
-  expect_equal(enc$encode(c(2)), c(4/6))
 })
 
 
@@ -64,4 +63,15 @@ test_that("encoding multiple column data.frames is possible", {
   enc <- CaEn(x,y)
   
   expect_equal(enc$encode(x), array(1,c(nrow,2)))
+})
+
+
+test_that("encoding transforms only factor and character columns", {
+  nrow <- 10
+  x <- data.frame(x1 = rep("A", nrow), x2 = 1:nrow, x3 = as.factor(rep("B", nrow)))
+  y <- rep(1, nrow)
+  enc <- CaEn(x,y)
+  
+  
+  expect_equal(enc$encode(x), cbind(rep(1,nrow), x$x2, rep(1,nrow)))
 })
