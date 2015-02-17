@@ -24,7 +24,9 @@ test_that("encoding can handle previously unseen values", {
   
   
   expect_equal(enc$encode(c('C')), c(4/6))
+  expect_equal(enc$encode(c(2)), c(4/6))
 })
+
 
 test_that("encoding rare values is influenced by global means", {
   nrow <- 1000

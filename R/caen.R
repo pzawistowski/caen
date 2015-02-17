@@ -6,7 +6,7 @@ nvl <- function(v1,v2){
 
 
 encodeColumn <- function(atts, map, default){
-  vapply(atts, FUN=function(v) nvl(map[[v]], default), FUN.VALUE=0.0, USE.NAMES = FALSE)
+  vapply(atts, FUN=function(v) nvl(map[[as.character(v)]], default), FUN.VALUE=0.0, USE.NAMES = FALSE)
 }
 
 encodeColumns <- function(atts, mapping){
@@ -51,7 +51,7 @@ createMapping <- function(x,y, target.value, lambda.fun){
 
 #' @export
 CaEn <- function(x, y, target.value = levels(as.factor(y))[[1]], k = 20, f = 4){
-  proto(mapping = createMapping(x,y, target.value, function(v) lambda(v, k, f)),
+  proto::proto(mapping = createMapping(x,y, target.value, function(v) lambda(v, k, f)),
         encode =  function(this, x){
           encodeColumns(x, this$mapping)   
         }
