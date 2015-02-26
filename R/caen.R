@@ -5,16 +5,20 @@ nvl <- function(v1,v2){
 }
 
 
-encodeColumn <- function(atts, map, default){
-  vapply(atts, FUN=function(v) nvl(map[[v]], default), FUN.VALUE=0.0, USE.NAMES = FALSE)
+encodeColumn <- function(col, mapping){
+  if(is.character(col) || is.factor(col)){
+    vapply(col, FUN=function(v) nvl(mapping$map[[as.character(v)]], mapping$default), FUN.VALUE=0.0, USE.NAMES = FALSE)
+  }else{
+    col
+  }
 }
 
 encodeColumns <- function(atts, mapping){
   col.num <- ncol(atts)
   if(is.null(col.num) || col.num == 1){
-    encodeColumn(atts, mapping$map, mapping$default)  
+    encodeColumn(atts, mapping)  
   }else{    
-    apply(1:col.num, 1, function(i) encodeColumn(atts[,i], mapping[[i]]$map, mapping[[i]]$default))
+    sapply(1:col.num, function(i) encodeColumn(atts[,i], mapping[[i]]))
   }
 }
 
@@ -24,19 +28,23 @@ lambda <- function(ni, k = 20, f = 4){
 }
 
 createMappingForColumn <- function(x,y, target.value, lambda.fun){
-  tab <- table(x, y)
-  
-  col.idx <- which(colnames(tab) == target.value)
-  col <- tab[,col.idx]
-  target.p <- sum(col)/length(x)
-  
-  rs <- rowSums(tab)
-  l <- lambda.fun(rs)
-  
-  map <- as.list(l*(col/rs) + (1-l)*target.p)
-  names(map) <- rownames(tab)
-  
-  list(map = map, default = sum(col)/sum(tab))  
+  if(is.character(x) || is.factor(x)){
+    tab <- table(x, y)
+    
+    col.idx <- which(colnames(tab) == target.value)
+    col <- tab[,col.idx]
+    target.p <- sum(col)/length(x)
+    
+    rs <- rowSums(tab)
+    l <- lambda.fun(rs)
+    
+    map <- as.list(l*(col/rs) + (1-l)*target.p)
+    names(map) <- rownames(tab)
+    
+    list(map = map, default = sum(col)/sum(tab))  
+  }else{
+    list()
+  }
 }
 
 createMapping <- function(x,y, target.value, lambda.fun){
@@ -51,7 +59,7 @@ createMapping <- function(x,y, target.value, lambda.fun){
 
 #' @export
 CaEn <- function(x, y, target.value = levels(as.factor(y))[[1]], k = 20, f = 4){
-  proto(mapping = createMapping(x,y, target.value, function(v) lambda(v, k, f)),
+  proto::proto(mapping = createMapping(x,y, target.value, function(v) lambda(v, k, f)),
         encode =  function(this, x){
           encodeColumns(x, this$mapping)   
         }
