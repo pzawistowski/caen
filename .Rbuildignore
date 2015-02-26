@@ -1,0 +1,4 @@
+^packrat/
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.travis\.yml$
